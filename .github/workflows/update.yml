@@ -26,10 +26,11 @@ jobs:
         id: update
         run: |
           nix flake update
-          if git diff --quiet flake.lock; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
+          if git diff flake.lock | grep -q '"narHash"'; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            git checkout flake.lock
           fi
 
       - name: Build
